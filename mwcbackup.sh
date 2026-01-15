@@ -9,6 +9,7 @@ steam_lib="$HOME"/.local/share/Steam/
 backup_loc="$HOME"/Documents/mwc-backups/
 # Default backup directory.
 backup_dir="mwc-backup"
+backup_temp="temp"
 
 # 'saves_path' should be the same for everyone.
 saves_path="steamapps/compatdata/4164420/pfx/drive_c/users/steamuser/AppData/LocalLow/Amistech/My Winter Car"
@@ -66,6 +67,16 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
     fi
 
 elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
+
+    if [[ ! -d "$backup_loc""$backup_temp" ]]; then # Before restoring, make temp backup of current save files.
+        mkdir -p "$backup_loc""$backup_temp"
+        if [[ "$?" -ne 0 ]]; then
+            echo -e "\e[31merror\e[0m: failed to create temp backup directory"
+            exit 1
+        fi
+    fi
+
+    cp -r "$path/." "$backup_loc""$backup_temp/."
 
     if [[ "$2" == '' ]]; then # Restore from $backup_dir.
         if [[ ! -d "$backup_loc""$backup_dir" ]]; then
