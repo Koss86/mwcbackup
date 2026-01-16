@@ -14,7 +14,7 @@ For example:
 
 On my dekstop, MWC is installed in a Steam Library located at `/mnt/ssd-1tb/SteamLibrary/`.
 
-So my `steam_lib` for my dekstop must be `steam_lib=/mnt/ssd-1tb/SteamLibrary/`.
+So my `steam_lib` for my dekstop must be `steam_lib="/mnt/ssd-1tb/SteamLibrary/"`.
 
 #
 
@@ -67,5 +67,8 @@ If you are using the Path method above, use `mwcbackup.sh` instead of `mwcbackup
 - `mwcbackup re [dirname]` will restore backups from alternate directory `[dirname]`.
 
 - `mwcbackup rm [dirname]` will remove the backup directory `[dirname]`.
+
+Before any restorations happen, the current (active) save files are backed up in
+~/Documents/mwc-backups/temp as an extra precaution.
 
 #
