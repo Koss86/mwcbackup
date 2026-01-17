@@ -105,7 +105,11 @@ elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
     fi
 
 elif [[ "$1" == 'rm' ]]; then
-    if [[ ! -d "$backup_loc""$2" ]]; then
+
+    if [[ "$2" == '' ]]; then
+        echo -e "\e[31merror\e[0m: missing argument for name of backup directory to be removed"
+        exit 1
+    elif [[ ! -d "$backup_loc""$2" ]]; then
         echo -e "\e[31merror\e[0m: directory not found"
         exit 1
     fi
@@ -113,7 +117,7 @@ elif [[ "$1" == 'rm' ]]; then
     rm -r "$backup_loc""$2"
 
     if [[ "$?" -eq 0 ]]; then
-        echo -e "\e[32msuccess\e[0m: removed backup directory \e[33m$backup_loc$2\e[0m"
+        echo -e "\e[32msuccess\e[0m: removed backup directory \e[33m$2\e[0m"
     else
         echo -e "\e[31merror\e[0m: remove failed"
         exit 1
