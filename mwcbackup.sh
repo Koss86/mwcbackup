@@ -7,9 +7,18 @@ steam_lib="$HOME"/.local/share/Steam/
 
 # This is where the back-ups will be saved, ~/Documents/mwc-backups.
 backup_loc="$HOME"/Documents/mwc-backups/
+
 # Default backup directory.
 backup_dir="mwc-backup"
-backup_temp="temp"
+
+# Name of directory where restore back-ups will be located.
+tmp_loc="restore-backups/"
+
+# Prefix for restore backup directories.
+tmp_prefix="mwc-save"
+
+# Number of restore backups to keep.
+tmp_limit=5
 
 # 'saves_path' should be the same for everyone.
 saves_path="steamapps/compatdata/4164420/pfx/drive_c/users/steamuser/AppData/LocalLow/Amistech/My Winter Car"
@@ -68,15 +77,27 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
 
 elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
 
-    if [[ ! -d "$backup_loc""$backup_temp" ]]; then # Before restoring, make temp backup of current save files.
-        mkdir -p "$backup_loc""$backup_temp"
-        if [[ "$?" -ne 0 ]]; then
-            echo -e "\e[31merror\e[0m: failed to create temp backup directory"
-            exit 1
-        fi
+    tmp_path="$backup_loc""$tmp_loc"
+    cur_date="$(date +%m-%d)"
+    timestamp="$cur_date"-"$(date +%s)"
+    tmp_dir="$tmp_prefix"-"$timestamp"
+
+    if [[ ! -d "$tmp_path""$tmp_dir" ]]; then
+        mkdir -p "$tmp_path""$tmp_dir"
     fi
 
-    cp -r "$path/." "$backup_loc""$backup_temp/."
+    # Before restoring, make a backup of current (active) save files.
+    cp -r "$path/." "$tmp_path""$tmp_dir/."
+
+    # Remove oldest restore backup if over limit.
+    num_of_tmps="$(ls $tmp_path | grep $tmp_prefix | wc -l)"
+    if [[ "$num_of_tmps" -gt "$tmp_limit" ]]; then
+        while [[ "$num_of_tmps" -ne "$tmp_limit" ]]; do
+            oldest_dir=$(find "$tmp_path" -maxdepth 1 -type d -name "$tmp_prefix*" | sort | head -n 1)
+            rm -r "$oldest_dir"
+            ((--num_of_tmps))
+        done
+    fi
 
     if [[ "$2" == '' ]]; then # Restore from $backup_dir.
         if [[ ! -d "$backup_loc""$backup_dir" ]]; then
