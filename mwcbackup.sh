@@ -32,7 +32,7 @@ if [[ ! -d "$path" ]]; then
     exit 1
 fi
 
-if [[ "$1" == '' ]]; then # If no argument, just do normal back-up.
+if [[ -z "$1" ]]; then # If no argument, just do normal back-up.
 
     if [[ ! -d "$backup_loc""$backup_dir" ]]; then
         mkdir -p "$backup_loc""$backup_dir"
@@ -54,7 +54,7 @@ if [[ "$1" == '' ]]; then # If no argument, just do normal back-up.
 
 elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
 
-    if [[ "$2" == '' ]]; then
+    if [[ -z "$2" ]]; then
         echo -e "\e[31merror\e[0m: missing argument for name of alternate backup directory"
         exit 1
     elif [[ ! -d "$backup_dir""$2" ]]; then
@@ -98,7 +98,7 @@ elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
         done
     fi
 
-    if [[ "$2" == '' ]]; then # Restore from $backup_dir.
+    if [[ -z "$2" ]]; then # Restore from $backup_dir.
         if [[ ! -d "$backup_loc""$backup_dir" ]]; then
             echo -e "\e[31merror\e[0m: unable to restore, backup directory not found"
             exit 1
@@ -126,7 +126,7 @@ elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
 
 elif [[ "$1" == 'rm' ]]; then
 
-    if [[ "$2" == '' ]]; then
+    if [[ -z "$2" ]]; then
         echo -e "\e[31merror\e[0m: missing argument for name of backup directory to be removed"
         exit 1
     elif [[ ! -d "$backup_loc""$2" ]]; then
