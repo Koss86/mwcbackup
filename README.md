@@ -1,6 +1,6 @@
 # My Winter Car Back-up
 
-A simple script for Linux users to back up My Winter Car save files.
+A bash script for Linux users to back up My Winter Car save files.
 
 ## Setup
 
@@ -54,21 +54,24 @@ If you are using the Path method above, use `mwcbackup.sh` instead of `mwcbackup
 
 - `mwcbackup` will copy MWC saves into '~/Documents/mwc-backups/mwc-backup'.
 
-- `mwcbackup alt [dirname]` will copy MWC saves into an alternate directory, named by you with
+- `mwcbackup alt [dirname]` will copy MWC saves into an alternate directory, named by you with the second argument `[dirname]`.
 
-    the second argument `[dirname]`. i.e backups will be saved in '~/Documents/mwc-backups/`[dirname]`'
-
-    For example:
-
-    `mwcbackup alt got-new-parts` will backup your saves into '~/Documents/mwc-backups/got-new-parts'.
+    > i.e Backups will be saved in '~/Documents/mwc-backups/`[dirname]`'.
+    >
+    > For example:
+    >
+    > `mwcbackup alt got-new-parts` will backup your saves into '~/Documents/mwc-backups/got-new-parts'.
 
 - `mwcbackup re` will restore your backups from '~/Documents/mwc-backups/mwc-backup'.
+
+    > Before any restorations are performed, the current (active) save files are backed up in:
+    >
+    > ~/Documents/mwc-backups/restore-backups/
+    >
+    > The number of restore backups that will be kept can be changed by editing `tmp_limit` near the top of the script.
 
 - `mwcbackup re [dirname]` will restore backups from alternate directory `[dirname]`.
 
 - `mwcbackup rm [dirname]` will remove the backup directory `[dirname]`.
-
-Before any restorations happen, the current (active) save files are backed up in
-~/Documents/mwc-backups/temp as an extra precaution.
 
 #
