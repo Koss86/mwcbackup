@@ -78,8 +78,7 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
 elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
 
     tmp_path="$backup_loc""$tmp_loc"
-    cur_date="$(date +%m-%d)"
-    timestamp="$cur_date"-"$(date +%s)"
+    timestamp="$(date +%m-%d)"-"$(date +%s)"
     tmp_dir="$tmp_prefix"-"$timestamp"
 
     if [[ ! -d "$tmp_path""$tmp_dir" ]]; then
