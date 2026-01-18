@@ -48,9 +48,9 @@ Once the script is in your $PATH, you can call the script from anywhere by typin
 
 ## Usage
 
-Use these commands in your termainal to back up, restore, or remove your backed up saves.
+Once an alias is setup or mwcbackup.sh is in your $PATH, use these commands in your termainal to back up, restore, or remove your backed up saves.
 
-If you are using the Path method above, use `mwcbackup.sh` instead of `mwcbackup`.
+If you are using the Path method, use `mwcbackup.sh` instead of `mwcbackup`.
 
 - `mwcbackup` will copy MWC saves into '~/Documents/mwc-backups/mwc-backup'.
 
