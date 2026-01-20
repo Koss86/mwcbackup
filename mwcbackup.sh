@@ -79,34 +79,11 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
 
 elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
 
-    tmp_path="$backup_loc""$tmp_loc"
-    timestamp="$(date +%m-%d)"-"$(date +%s)"
-    tmp_dir="$tmp_prefix"-"$timestamp"
-
-    if [[ ! -d "$tmp_path""$tmp_dir" ]]; then
-        mkdir -p "$tmp_path""$tmp_dir"
-    fi
-
-    # Before restoring, make a backup of current (active) save files.
-    cp -r "$path/." "$tmp_path""$tmp_dir/."
-
-    # Remove oldest restore backup if over limit.
-    num_of_tmps="$(ls $tmp_path | grep $tmp_prefix | wc -l)"
-    if [[ "$num_of_tmps" -gt "$tmp_limit" ]]; then
-        while [[ "$num_of_tmps" -ne "$tmp_limit" ]]; do
-            oldest_dir=$(find "$tmp_path" -maxdepth 1 -type d -name "$tmp_prefix*" | sort | head -n 1)
-            rm -r "$oldest_dir"
-            ((--num_of_tmps))
-        done
-    fi
-
     if [[ -z "$2" ]]; then # Restore from $backup_dir.
         if [[ ! -d "$backup_loc""$backup_dir" ]]; then
             echo -e "\e[31merror\e[0m: unable to restore, backup directory not found"
             exit 1
         fi
-
-        cp -r "$backup_loc""$backup_dir/." "$path/."
         from="$backup_dir"
 
     else # If '$2' is not empty, restore from provided alternate directory.
@@ -114,12 +91,36 @@ elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
             echo -e "\e[31merror\e[0m: unable to restore, backup directory not found"
             exit 1
         fi
-
-        cp -r "$backup_loc""$2/." "$path/."
         from="$2"
     fi
 
-    if [[ "$?" -eq 0 ]]; then
+    # create a restore-backup
+    timestamp="$(date +%m-%d)"-"$(date +%s)"
+    tmp_save_dir="$tmp_prefix"-"$timestamp"
+    if [[ ! -d "$tmp_path""$tmp_save_dir" ]]; then
+        mkdir -p "$tmp_path""$tmp_save_dir"
+    fi
+    cp -r "${path}/." "$tmp_path""$tmp_save_dir/."
+
+    # restore from backup
+    cp -r "$backup_loc""$from/." "${path}/."
+    res_success=$?
+
+    # remove oldest restore-backup
+    num_of_tmps="$(ls $tmp_path | grep $tmp_prefix | wc -l)"
+    if [[ "$num_of_tmps" -gt "$tmp_limit" ]]; then
+        while [[ "$num_of_tmps" -ne "$tmp_limit" ]]; do
+            oldest_dir=$(find "$tmp_path" -maxdepth 1 -type d -name "$tmp_prefix*" | sort | head -n 1)
+            if [[ "$?" -eq 0 ]]; then
+                rm -r "$oldest_dir"
+                ((--num_of_tmps))
+            else
+                break
+            fi
+        done
+    fi
+
+    if [[ "$res_success" -eq 0 ]]; then
         echo -e "\e[32msuccess\e[0m: backups restored from \e[33m$from\e[0m"
     else
         echo -e "\e[31merror\e[0m: copy failed, backups not restored"
