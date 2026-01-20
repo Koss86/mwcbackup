@@ -20,6 +20,10 @@ So my `steam_lib` for my dekstop must be `steam_lib="/mnt/ssd-1tb/SteamLibrary/"
 
 #### Alias
 
+If you're in the same directory as the script, you can simply type `./mwcbackup.sh` in your terminal to run it.
+
+But an easier way is to move mwcbackup.sh somewhere thats in your $PATH.
+
 I recommend setting up an alias in your .bashrc file, normally located at `~/.bashrc`.
 
 Copy and paste the snippet below into your .bashrc.
@@ -37,10 +41,6 @@ in your $PATH.
 #
 
 #### Path
-
-If you're in the same directory as the script, you can simply type `./mwcbackup.sh` in your terminal to run it.
-
-But an easier way is to move mwcbackup.sh somewhere thats in your $PATH.
 
 Use the command `echo $PATH` to see directories that are in your $PATH.
 
