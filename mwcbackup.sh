@@ -5,30 +5,32 @@
 # If installed into a SteamLibrary, edit 'steam_lib' to point to its location.
 steam_lib="$HOME"/.local/share/Steam/
 
+# 'mwc_saves' should be the same for everyone.
+mwc_saves="steamapps/compatdata/4164420/pfx/drive_c/users/steamuser/AppData/LocalLow/Amistech/My Winter Car"
+
 # This is where the back-ups will be saved, ~/Documents/mwc-backups.
 backup_loc="$HOME"/Documents/mwc-backups/
 
-# Default backup directory.
+# Name for default backup directory.
 backup_dir="mwc-backup"
 
-# Name of directory where restore back-ups will be located.
-tmp_loc="restore-backups/"
+# Name for directory where restore-backups will be located.
+tmp_dir="restore-backups/"
 
-# Prefix for restore backup directories.
+tmp_path="$backup_loc""$tmp_dir"
+
+# Prefix for restore-backup directories.
 tmp_prefix="mwc-save"
 
-# Number of restore backups to keep.
+# Number of restore-backups to keep.
 tmp_limit=5
 
-# 'saves_path' should be the same for everyone.
-saves_path="steamapps/compatdata/4164420/pfx/drive_c/users/steamuser/AppData/LocalLow/Amistech/My Winter Car"
+path="$steam_lib""${mwc_saves}"
 
-path="$steam_lib""$saves_path"
-
-if [[ ! -d "$path" ]]; then
+if [[ ! -d "${path}" ]]; then
     echo -e "\e[31merror\e[0m: unable to locate save files, is the path correct?"
     echo -e "lib path: \e[33m$steam_lib\e[0m"
-    echo -e "saves path: \e[33m$saves_path\e[0m"
+    echo -e "saves path: \e[33m${mwc_saves}\e[0m"
     exit 1
 fi
 
@@ -42,7 +44,7 @@ if [[ -z "$1" ]]; then # If no argument, just do normal back-up.
         fi
     fi
 
-    cp -r "$path/." "$backup_loc""$backup_dir/."
+    cp -r "${path}/." "$backup_loc""$backup_dir/."
 
     if [[ "$?" -eq 0 ]]; then
         echo -e "\e[32msuccess\e[0m: saves successfully backed up"
@@ -65,7 +67,7 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
         fi
     fi
 
-    cp -r "$path/." "$backup_loc""$2/."
+    cp -r "${path}/." "$backup_loc""$2/."
 
     if [[ "$?" -eq 0 ]]; then
         echo -e "\e[32msuccess\e[0m: saves successfully backed up"
