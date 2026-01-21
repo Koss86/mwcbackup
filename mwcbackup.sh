@@ -37,16 +37,13 @@ fi
 if [[ -z "$1" ]]; then # If no argument, just do normal back-up.
 
     if [[ ! -d "$backup_loc""$backup_dir" ]]; then
-        mkdir -p "$backup_loc""$backup_dir"
-        if [[ "$?" -ne 0 ]]; then
+        if ! mkdir -p "$backup_loc""$backup_dir"; then
             echo -e "\e[31merror\e[0m: failed to create backup directory"
             exit 1
         fi
     fi
 
-    cp -r "${path}/." "$backup_loc""$backup_dir/."
-
-    if [[ "$?" -eq 0 ]]; then
+    if cp -r "${path}/." "$backup_loc""$backup_dir/."; then
         echo -e "\e[32msuccess\e[0m: saves successfully backed up"
         echo -e "backups located in:\e[33m $backup_loc$backup_dir\e[0m"
     else
@@ -60,16 +57,13 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
         echo -e "\e[31merror\e[0m: missing argument for name of alternate backup directory"
         exit 1
     elif [[ ! -d "$backup_dir""$2" ]]; then
-        mkdir -p "$backup_loc""$2"
-        if [[ "$?" -ne 0 ]]; then
+        if ! mkdir -p "$backup_loc""$2"; then
             echo -e "\e[31merror\e[0m: failed to create backup directory"
             exit 1
         fi
     fi
 
-    cp -r "${path}/." "$backup_loc""$2/."
-
-    if [[ "$?" -eq 0 ]]; then
+    if cp -r "${path}/." "$backup_loc""$2/."; then
         echo -e "\e[32msuccess\e[0m: saves successfully backed up"
         echo -e "backups located in: \e[33m$backup_loc$2\e[0m"
     else
@@ -137,9 +131,7 @@ elif [[ "$1" == 'rm' ]]; then
         exit 1
     fi
 
-    rm -r "$backup_loc""$2"
-
-    if [[ "$?" -eq 0 ]]; then
+    if rm -r "$backup_loc""$2"; then
         echo -e "\e[32msuccess\e[0m: removed backup directory \e[33m$2\e[0m"
     else
         echo -e "\e[31merror\e[0m: remove failed"
