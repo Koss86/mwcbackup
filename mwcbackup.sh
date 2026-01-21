@@ -89,34 +89,39 @@ elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
     fi
 
     # create a restore-backup
-    timestamp="$(date +%m-%d)"-"$(date +%s)"
-    tmp_save_dir="$tmp_prefix"-"$timestamp"
-    if [[ ! -d "$tmp_path""$tmp_save_dir" ]]; then
-        mkdir -p "$tmp_path""$tmp_save_dir"
+    if [[ "$tmp_limit" -gt 0 ]]; then
+        timestamp="$(date +%m-%d)"-"$(date +%s)"
+        tmp_save_dir="$tmp_prefix"-"$timestamp"
+        if [[ ! -d "$tmp_path""$tmp_save_dir" ]]; then
+            mkdir -p "$tmp_path""$tmp_save_dir"
+        fi
+        cp -r "${path}/." "$tmp_path""$tmp_save_dir/."
     fi
-    cp -r "${path}/." "$tmp_path""$tmp_save_dir/."
 
     # restore from backup
-    cp -r "$backup_loc""$from/." "${path}/."
-    res_success=$?
+    if cp -r "$backup_loc""$from/." "${path}/."; then
 
-    # remove oldest restore-backup
-    num_of_tmps="$(ls $tmp_path | grep $tmp_prefix | wc -l)"
-    if [[ "$num_of_tmps" -gt "$tmp_limit" ]]; then
-        while [[ "$num_of_tmps" -ne "$tmp_limit" ]]; do
-            oldest_dir=$(find "$tmp_path" -maxdepth 1 -type d -name "$tmp_prefix*" | sort | head -n 1)
-            if [[ "$?" -eq 0 ]]; then
-                rm -r "$oldest_dir"
-                ((--num_of_tmps))
-            else
-                break
-            fi
+        # remove oldest restore-backups
+        for _ in "$tmp_path""$tmp_prefix"*; do
+            ((++num_of_tmps))
         done
-    fi
+        if [[ "$num_of_tmps" -gt "$tmp_limit" ]]; then
+            while [[ "$num_of_tmps" -ne "$tmp_limit" ]]; do
+                if oldest_dir=$(find "$tmp_path" -maxdepth 1 -type d -name "$tmp_prefix*" | sort | head -n 1); then
+                    rm -r "$oldest_dir"
+                    ((--num_of_tmps))
+                else
+                    break
+                fi
+            done
+        fi
 
-    if [[ "$res_success" -eq 0 ]]; then
         echo -e "\e[32msuccess\e[0m: backups restored from \e[33m$from\e[0m"
+
     else
+        if [[ "$tmp_limit" -gt 0 ]]; then
+            rm -r "$tmp_path""$tmp_save_dir"
+        fi
         echo -e "\e[31merror\e[0m: copy failed, backups not restored"
         exit 1
     fi
