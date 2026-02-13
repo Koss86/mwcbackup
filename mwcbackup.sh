@@ -3,13 +3,13 @@
 # steam_lib must point the Steam Library where My Winter Car is installed.
 # Either inside Steams default location ~/.local/share/Steam/ or a SteamLibrary.
 # If installed into a SteamLibrary, edit 'steam_lib' to point to its location.
-steam_lib="$HOME"/.local/share/Steam/
+steam_lib="$HOME/.local/share/Steam/"
 
 # 'mwc_saves' should be the same for everyone.
 mwc_saves="steamapps/compatdata/4164420/pfx/drive_c/users/steamuser/AppData/LocalLow/Amistech/My Winter Car"
 
 # This is where the back-ups will be saved, ~/Documents/mwc-backups.
-backup_loc="$HOME"/Documents/mwc-backups/
+backup_loc="$HOME/Documents/mwc-backups/"
 
 # Name for default backup directory.
 backup_dir="mwc-backup"
@@ -17,7 +17,7 @@ backup_dir="mwc-backup"
 # Name for directory where restore-backups will be located.
 tmp_dir="restore-backups/"
 
-tmp_path="$backup_loc""$tmp_dir"
+tmp_path="$backup_loc$tmp_dir"
 
 # Prefix for restore-backup directories.
 tmp_prefix="mwc-save"
@@ -25,7 +25,7 @@ tmp_prefix="mwc-save"
 # Number of restore-backups to keep.
 tmp_limit=5
 
-path="$steam_lib""${mwc_saves}"
+path="$steam_lib${mwc_saves}"
 
 if [[ ! -d "${path}" ]]; then
     echo -e "\e[31merror\e[0m: unable to locate save files, is the path correct?"
@@ -36,14 +36,14 @@ fi
 
 if [[ -z "$1" ]]; then # If no argument, just do normal back-up.
 
-    if [[ ! -d "$backup_loc""$backup_dir" ]]; then
+    if [[ ! -d "$backup_loc$backup_dir" ]]; then
         if ! mkdir -p "$backup_loc""$backup_dir"; then
             echo -e "\e[31merror\e[0m: failed to create backup directory"
             exit 1
         fi
     fi
 
-    if cp -r "${path}/." "$backup_loc""$backup_dir/."; then
+    if cp -r "${path}/." "$backup_loc$backup_dir/."; then
         echo -e "\e[32msuccess\e[0m: saves successfully backed up"
         echo -e "backups located in:\e[33m $backup_loc$backup_dir\e[0m"
     else
@@ -56,14 +56,14 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
     if [[ -z "$2" ]]; then
         echo -e "\e[31merror\e[0m: missing argument for name of alternate backup directory"
         exit 1
-    elif [[ ! -d "$backup_dir""$2" ]]; then
-        if ! mkdir -p "$backup_loc""$2"; then
+    elif [[ ! -d "$backup_dir$2" ]]; then
+        if ! mkdir -p "$backup_loc$2"; then
             echo -e "\e[31merror\e[0m: failed to create backup directory"
             exit 1
         fi
     fi
 
-    if cp -r "${path}/." "$backup_loc""$2/."; then
+    if cp -r "${path}/." "$backup_loc$2/."; then
         echo -e "\e[32msuccess\e[0m: saves successfully backed up"
         echo -e "backups located in: \e[33m$backup_loc$2\e[0m"
     else
@@ -74,14 +74,14 @@ elif [[ "$1" == 'alt' ]]; then # Save in alternate directory.
 elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
 
     if [[ -z "$2" ]]; then # Restore from $backup_dir.
-        if [[ ! -d "$backup_loc""$backup_dir" ]]; then
+        if [[ ! -d "$backup_loc$backup_dir" ]]; then
             echo -e "\e[31merror\e[0m: unable to restore, backup directory not found"
             exit 1
         fi
         from="$backup_dir"
 
     else # If '$2' is not empty, restore from provided alternate directory.
-        if [[ ! -d "$backup_loc""$2" ]]; then
+        if [[ ! -d "$backup_loc$2" ]]; then
             echo -e "\e[31merror\e[0m: unable to restore, backup directory not found"
             exit 1
         fi
@@ -90,19 +90,21 @@ elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
 
     # create a restore-backup
     if [[ "$tmp_limit" -gt 0 ]]; then
-        timestamp="$(date +%m-%d)"-"$(date +%s)"
-        tmp_save_dir="$tmp_prefix"-"$timestamp"
-        if [[ ! -d "$tmp_path""$tmp_save_dir" ]]; then
-            mkdir -p "$tmp_path""$tmp_save_dir"
+        timestamp="$(date +%m-%d)-$(date +%s)"
+        tmp_save_dir="$tmp_prefix-$timestamp"
+        if [[ ! -d "$tmp_path$tmp_save_dir" ]]; then
+            mkdir -p "$tmp_path$tmp_save_dir"
         fi
-        cp -r "${path}/." "$tmp_path""$tmp_save_dir/."
+        cp -r "${path}/." "$tmp_path$tmp_save_dir/."
     fi
 
     # restore from backup
-    if cp -r "$backup_loc""$from/." "${path}/."; then
+    if cp -r "$backup_loc$from/." "${path}/."; then
+
+        echo -e "\e[32msuccess\e[0m: backups restored from \e[33m$from\e[0m"
 
         # remove oldest restore-backups
-        for _ in "$tmp_path""$tmp_prefix"*; do
+        for _ in "$tmp_path$tmp_prefix"*; do
             ((++num_of_tmps))
         done
         if [[ "$num_of_tmps" -gt "$tmp_limit" ]]; then
@@ -116,11 +118,9 @@ elif [[ "$1" == 're' ]]; then # Restore from back-up, overwriting files.
             done
         fi
 
-        echo -e "\e[32msuccess\e[0m: backups restored from \e[33m$from\e[0m"
-
     else
         if [[ "$tmp_limit" -gt 0 ]]; then
-            rm -r "$tmp_path""$tmp_save_dir"
+            rm -r "$tmp_path$tmp_save_dir"
         fi
         echo -e "\e[31merror\e[0m: copy failed, backups not restored"
         exit 1
@@ -131,12 +131,12 @@ elif [[ "$1" == 'rm' ]]; then
     if [[ -z "$2" ]]; then
         echo -e "\e[31merror\e[0m: missing argument for name of backup directory to be removed"
         exit 1
-    elif [[ ! -d "$backup_loc""$2" ]]; then
+    elif [[ ! -d "$backup_loc$2" ]]; then
         echo -e "\e[31merror\e[0m: directory not found"
         exit 1
     fi
 
-    if rm -r "$backup_loc""$2"; then
+    if rm -r "$backup_loc$2"; then
         echo -e "\e[32msuccess\e[0m: removed backup directory \e[33m$2\e[0m"
     else
         echo -e "\e[31merror\e[0m: remove failed"
